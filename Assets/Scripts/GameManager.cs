@@ -27,9 +27,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void CollectNectar()
+    public void CollectNectar(int nectarAmount)
     {
-        nectarCollected++;
+        nectarCollected += nectarAmount;
 
         if (nectarCollected >= nectarGoal)
         {

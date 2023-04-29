@@ -2,18 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BeeState
+{
+    Buzzing,
+    Gathering,
+    Storing
+}
+
 public class Bee : MonoBehaviour, IEntity
 {
+    public GameObject hiveGameObject;
+    public float targetFlowerDistance = Mathf.Infinity;
     public GameObject targetFlowerGameObject;
-    public float targetFlowerDistance;
+    public float hiveDistance = Mathf.Infinity;
+    public BeeState beeState = BeeState.Buzzing;
+
     public int nectarCapacity = 10;
     public int nectarAmount = 0;
     public bool hasNectar = false;
     public bool isFull = false;
 
     private IGatherable targetFlowerGatherable;
+    private IStorable hiveStorable;
     private GameManager gameManager;
-    private float gatherDistance = 0.5f;
+    private float interactionRange = 0.5f;
     private int gatherAmount = 1;
 
     // Start is called before the first frame update
@@ -22,6 +34,9 @@ public class Bee : MonoBehaviour, IEntity
         gameManager = GameManager.Instance;
         gameManager.bees.Add(this.gameObject);
         gameManager.entities.Add(this.GetComponent<IEntity>());
+
+        hiveGameObject = GameObject.Find("Hive");
+        hiveStorable = hiveGameObject.GetComponent<IStorable>();
     }
 
     // Update is called once per frame
@@ -31,22 +46,49 @@ public class Bee : MonoBehaviour, IEntity
     {
         Debug.Log("Bee is ticking");
 
-        CheckNectarAmount();
-
-        if (isFull)
-        {
-            Debug.Log("Bee is full");
-            return;
-        }
-
         FindNearestFlower();
+        CheckBeeState();
 
-        if (targetFlowerGameObject == null)
+        switch (beeState)
         {
+            case BeeState.Buzzing:
+                break;
+            case BeeState.Gathering:
+                Gather();
+                break;
+            case BeeState.Storing:
+                Store();
+                break;
+        }
+
+        CheckNectarAmount();
+    }
+
+    void Store()
+    {
+        Debug.Log("Storing nectar in hive");
+        hiveStorable.Store(gatherAmount);
+        nectarAmount -= gatherAmount;
+    }
+
+    // handle all enter/exit state logic here
+    void CheckBeeState()
+    {
+        hiveDistance = Vector3.Distance(transform.position, hiveGameObject.transform.position);
+
+        if (hiveDistance <= interactionRange && hasNectar)
+        {
+            beeState = BeeState.Storing;
             return;
         }
 
-        AttemptGather();
+        if (targetFlowerGameObject && targetFlowerDistance <= interactionRange && !isFull)
+        {
+            beeState = BeeState.Gathering;
+            return;
+        }
+
+        beeState = BeeState.Buzzing;
     }
 
     void CheckNectarAmount()
@@ -55,20 +97,12 @@ public class Bee : MonoBehaviour, IEntity
         isFull = nectarAmount >= nectarCapacity;
     }
 
-    void AttemptGather()
+    void Gather()
     {
-        if (targetFlowerDistance <= gatherDistance)
-        {
-            var toGather = Mathf.Min(gatherAmount, nectarCapacity - nectarAmount);
-            var amountGathered = targetFlowerGatherable.Gather(toGather);
+        var toGather = Mathf.Min(gatherAmount, nectarCapacity - nectarAmount);
+        var amountGathered = targetFlowerGatherable.Gather(toGather);
 
-            nectarAmount += amountGathered;
-
-            if (nectarAmount >= nectarCapacity)
-            {
-                isFull = true;
-            }
-        }
+        nectarAmount += amountGathered;
     }
 
     void FindNearestFlower()
