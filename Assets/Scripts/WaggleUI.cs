@@ -15,6 +15,7 @@ public class WaggleUI : MonoBehaviour
     public Sprite rightDirection;
     public Sprite downDirection;
     public Sprite leftDirection;
+    public Sprite inputBlocked;
 
     private Vector2 selectedDirection;
     private Waggler waggler;
@@ -23,9 +24,6 @@ public class WaggleUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // for (int i = 0; i < directionImages.Length; i++)
-        // {
-        // }
         directionImages[0] = GameObject.Find("WaggleDirection0").GetComponent<Image>();
         waggler = GameObject.Find("Waggler").GetComponent<Waggler>();
     }
@@ -33,26 +31,24 @@ public class WaggleUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(waggler.direction);
-        if (waggler.direction != Vector2.zero)
-        {
-            selectedDirection = waggler.direction;
-
-            SetSelectedDirectionSprites();
-        }
+        selectedDirection = waggler.direction;
+        SetSelectedDirectionSprites();
     }
 
     void SetSelectedDirectionSprites()
     {
-        directionImages[0].sprite = GetDirectionSprite(selectedDirection);
-        // for (int i = 0; i < directionImages.Length; i++)
-        // {
-        //     directionImages[i].sprite = GetDirectionSprite(waggler.waggleDirections[i]);
-        // }
+        directionImages[0].enabled = true;
+        var blocked = waggler.isMiss || waggler.inputBlocked;
+        directionImages[0].sprite = GetDirectionSprite(selectedDirection, blocked);
     }
 
-    Sprite GetDirectionSprite(Vector2 direction)
+    Sprite GetDirectionSprite(Vector2 direction, bool blocked)
     {
+        if (blocked)
+        {
+            return inputBlocked;
+        }
+
         var sprite = upDirection;
         switch (direction)
         {
@@ -67,6 +63,9 @@ public class WaggleUI : MonoBehaviour
                 break;
             case Vector2 v when v.Equals(Vector2.left):
                 sprite = leftDirection;
+                break;
+            default:
+                directionImages[0].enabled = false;
                 break;
         }
 

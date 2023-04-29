@@ -23,7 +23,7 @@ public class Waggler : MonoBehaviour, IEntity
     public InputAction directionInput;
     public InputAction waggleInput;
 
-    public bool blockInput = false;
+    public bool inputBlocked = false;
     public float inputTimer = 0.0f;
     public float perfectDuration = 0.2f;
     public float goodDuration = 0.4f;
@@ -126,7 +126,7 @@ public class Waggler : MonoBehaviour, IEntity
 
     bool IsInputBlocked()
     {
-        if (blockInput)
+        if (inputBlocked)
         {
             return true;
         }
@@ -160,7 +160,7 @@ public class Waggler : MonoBehaviour, IEntity
         if (isMiss)
         {
             comboCount = 0;
-            blockInput = true;
+            inputBlocked = true;
         }
 
         if (isPerfect)
@@ -173,14 +173,14 @@ public class Waggler : MonoBehaviour, IEntity
 
     void ResetInput()
     {
-        if (blockInput)
+        if (inputBlocked)
         {
-            blockInput = false;
+            inputBlocked = false;
         }
 
         if (isMiss)
         {
-            blockInput = true;
+            inputBlocked = true;
         }
 
         direction = new Vector2(0, 0);
