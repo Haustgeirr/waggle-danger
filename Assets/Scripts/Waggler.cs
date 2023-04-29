@@ -10,6 +10,7 @@ public class Waggler : MonoBehaviour, IEntity
     private GameManager gameManager;
 
     public Vector2 direction;
+    public Vector2 lastDirection;
     public List<Vector2> waggleDirections = new List<Vector2>();
     public Vector2 waggleDirection;
     private Vector2 inputDirection;
@@ -22,6 +23,7 @@ public class Waggler : MonoBehaviour, IEntity
     public InputAction directionInput;
     public InputAction waggleInput;
 
+    public bool blockInput = false;
     public float inputTimer = 0.0f;
     public float perfectDuration = 0.2f;
     public float goodDuration = 0.4f;
@@ -44,7 +46,7 @@ public class Waggler : MonoBehaviour, IEntity
     public void Tick()
     {
         ResetInput();
-        GetNextDirection();
+        // GetNextDirection();
     }
 
     void OnEnable()
@@ -64,27 +66,23 @@ public class Waggler : MonoBehaviour, IEntity
         // assign a callback for the "waggleInput" action.
         waggleInput.performed += ctx =>
         {
-            CheckMultipleInputs();
-            OnWaggle(ctx);
+            // IsInputBlocked();
+            // OnWaggle(ctx);
         };
 
         // if we have already received an input this frame, penalise the player
         directionInput.performed += ctx =>
         {
-            var hasMultiple = CheckMultipleInputs();
+            // var hasMultiple = IsInputBlocked();
 
-            if (!hasMultiple)
+            if (!IsInputBlocked())
             {
+                lastDirection = direction;
                 direction = ctx.ReadValue<Vector2>();
+                SwarmTarget.transform.position += new Vector3(direction.x, direction.y, 0);
 
-                if (direction != waggleDirection)
-                {
-                    Debug.Log("Wrong direction!");
-                    isMiss = true;
-                }
+                ScoreInput();
             }
-
-            ScoreInput();
         };
     }
 
@@ -126,8 +124,13 @@ public class Waggler : MonoBehaviour, IEntity
         return dir;
     }
 
-    bool CheckMultipleInputs()
+    bool IsInputBlocked()
     {
+        if (blockInput)
+        {
+            return true;
+        }
+
         if (hasReceivedInput)
         {
             Debug.Log("TOo many Inputs!");
@@ -141,21 +144,23 @@ public class Waggler : MonoBehaviour, IEntity
 
     void ScoreInput()
     {
-        if (inputTimer <= goodDuration)
-        {
-            isGood = true;
-        }
-
         if (inputTimer <= perfectDuration)
         {
             isPerfect = true;
         }
+        else if (inputTimer <= goodDuration)
+        {
+            isGood = true;
+        }
+        else
+        {
+            isMiss = true;
+        }
 
         if (isMiss)
         {
-            isGood = false;
-            isPerfect = false;
             comboCount = 0;
+            blockInput = true;
         }
 
         if (isPerfect)
@@ -168,6 +173,16 @@ public class Waggler : MonoBehaviour, IEntity
 
     void ResetInput()
     {
+        if (blockInput)
+        {
+            blockInput = false;
+        }
+
+        if (isMiss)
+        {
+            blockInput = true;
+        }
+
         direction = new Vector2(0, 0);
         isPerfect = false;
         isGood = false;
@@ -195,6 +210,6 @@ public class Waggler : MonoBehaviour, IEntity
         Debug.Log("Waggle! " + direction);
         Debug.Log("Combo Count: " + comboCount);
 
-        SwarmTarget.transform.position += new Vector3(waggleDirection.x, waggleDirection.y, 0);
+        // SwarmTarget.transform.position += new Vector3(waggleDirection.x, waggleDirection.y, 0);
     }
 }

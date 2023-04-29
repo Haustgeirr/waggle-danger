@@ -12,9 +12,9 @@ public enum BeeState
 public class Bee : MonoBehaviour, IEntity
 {
     public GameObject hiveGameObject;
-    public float targetFlowerDistance = Mathf.Infinity;
+    public float targetFlowerDistance;
     public GameObject targetFlowerGameObject;
-    public float hiveDistance = Mathf.Infinity;
+    public float hiveDistance;
     public BeeState beeState = BeeState.Buzzing;
 
     public int nectarCapacity = 10;
@@ -37,6 +37,9 @@ public class Bee : MonoBehaviour, IEntity
 
         hiveGameObject = GameObject.Find("Hive");
         hiveStorable = hiveGameObject.GetComponent<IStorable>();
+
+        targetFlowerDistance = Mathf.Infinity;
+        hiveDistance = Mathf.Infinity;
     }
 
     // Update is called once per frame

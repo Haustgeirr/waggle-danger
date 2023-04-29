@@ -23,27 +23,32 @@ public class WaggleUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < directionImages.Length; i++)
-        {
-            directionImages[i] = GameObject.Find("WaggleDirection" + (i)).GetComponent<Image>();
-        }
-
+        // for (int i = 0; i < directionImages.Length; i++)
+        // {
+        // }
+        directionImages[0] = GameObject.Find("WaggleDirection0").GetComponent<Image>();
         waggler = GameObject.Find("Waggler").GetComponent<Waggler>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        selectedDirection = waggler.waggleDirection;
-        SetSelectedDirectionSprites();
+        Debug.Log(waggler.direction);
+        if (waggler.direction != Vector2.zero)
+        {
+            selectedDirection = waggler.direction;
+
+            SetSelectedDirectionSprites();
+        }
     }
 
     void SetSelectedDirectionSprites()
     {
-        for (int i = 0; i < directionImages.Length; i++)
-        {
-            directionImages[i].sprite = GetDirectionSprite(waggler.waggleDirections[i]);
-        }
+        directionImages[0].sprite = GetDirectionSprite(selectedDirection);
+        // for (int i = 0; i < directionImages.Length; i++)
+        // {
+        //     directionImages[i].sprite = GetDirectionSprite(waggler.waggleDirections[i]);
+        // }
     }
 
     Sprite GetDirectionSprite(Vector2 direction)
