@@ -4,32 +4,70 @@ using UnityEngine;
 
 public class Bee : MonoBehaviour, IEntity
 {
-    public FlowerStruct targetFlower;
+    public GameObject targetFlowerGameObject;
+    public float targetFlowerDistance;
+    public int nectarCapacity = 10;
+    public int nectarAmount = 0;
+    public bool hasNectar = false;
+    public bool isFull = false;
 
+    private IGatherable targetFlowerGatherable;
     private GameManager gameManager;
-
     private float gatherDistance = 0.5f;
     private int gatherAmount = 1;
 
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameManager.instance;
-        gameManager.bees.Add(new BeeEntity { gameObject = this.gameObject, entity = this });
+        gameManager = GameManager.Instance;
+        gameManager.bees.Add(this.gameObject);
+        gameManager.entities.Add(this.GetComponent<IEntity>());
     }
 
     // Update is called once per frame
     void Update() { }
 
-    void Tick()
+    public void Tick()
     {
         Debug.Log("Bee is ticking");
 
+        CheckNectarAmount();
+
+        if (isFull)
+        {
+            Debug.Log("Bee is full");
+            return;
+        }
+
         FindNearestFlower();
 
-        if (targetFlower.distance <= gatherDistance)
+        if (targetFlowerGameObject == null)
         {
-            var amountGathered = targetFlower.gatherable.Gather(gatherAmount);
+            return;
+        }
+
+        AttemptGather();
+    }
+
+    void CheckNectarAmount()
+    {
+        hasNectar = nectarAmount > 0;
+        isFull = nectarAmount >= nectarCapacity;
+    }
+
+    void AttemptGather()
+    {
+        if (targetFlowerDistance <= gatherDistance)
+        {
+            var toGather = Mathf.Min(gatherAmount, nectarCapacity - nectarAmount);
+            var amountGathered = targetFlowerGatherable.Gather(toGather);
+
+            nectarAmount += amountGathered;
+
+            if (nectarAmount >= nectarCapacity)
+            {
+                isFull = true;
+            }
         }
     }
 
@@ -38,7 +76,7 @@ public class Bee : MonoBehaviour, IEntity
         Debug.Log("Finding nearest flower");
 
         float closestDistance = Mathf.Infinity;
-        var potentialFlower = null;
+        GameObject potentialFlower = null;
 
         foreach (GameObject flower in gameManager.flowers)
         {
@@ -51,20 +89,20 @@ public class Bee : MonoBehaviour, IEntity
             }
         }
 
-        targetFlower = new FlowerStruct
+        if (potentialFlower == null)
         {
-            gameObject = potentialFlower,
-            flower = potentialFlower.GetComponent<Flower>(),
-            distance = distance,
-            gatherable = potentialFlower.GetComponent<IGatherable>()
-        };
+            Debug.Log("No flowers found");
+            targetFlowerGameObject = null;
+            targetFlowerDistance = Mathf.Infinity;
+            targetFlowerGatherable = null;
 
-        Debug.Log("Closest flower is " + targetFlower.gameObject.name);
+            return;
+        }
+
+        targetFlowerGameObject = potentialFlower;
+        targetFlowerDistance = closestDistance;
+        targetFlowerGatherable = targetFlowerGameObject.GetComponent<IGatherable>();
+
+        Debug.Log("Closest flower is " + targetFlowerGameObject.name);
     }
-}
-
-public struct BeeEntity
-{
-    public GameObject gameObject { get; set; }
-    public IEntity entity { get; set; }
 }

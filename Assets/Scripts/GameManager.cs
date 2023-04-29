@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
-    public GameObject player;
-    public GameObject[] flowers;
-    public BeeEntity[] bees;
-    public int nectarCollected;
-    public int nectarGoal;
+    private static GameManager instance = null;
+    public List<GameObject> flowers = new List<GameObject>();
+    public List<GameObject> bees = new List<GameObject>();
+    public List<IEntity> entities = new List<IEntity>();
+    public int nectarCollected = 0;
+    public int nectarGoal = 10;
 
     private float tickRate = 1.0f;
     private float tickTimer = 0.0f;
+
+    public static GameManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<GameManager>();
+            }
+
+            return instance;
+        }
+    }
 
     public void CollectNectar()
     {
@@ -31,12 +44,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        else
-        {
-            instance = this;
-        }
-
-        // flowers = GameObject.FindGameObjectsWithTag("Flower");
     }
 
     // Update is called once per frame
@@ -55,9 +62,9 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Game is ticking");
 
-        foreach (BeeEntity bee in bees)
+        foreach (IEntity entity in entities)
         {
-            bee.entity.Tick();
+            entity.Tick();
         }
     }
 

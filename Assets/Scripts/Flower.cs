@@ -6,7 +6,8 @@ public class Flower : MonoBehaviour, IGatherable
 {
     private GameManager gameManager;
 
-    private int nectarAmount = 10;
+    public int nectarAmount = 10;
+    public bool hasNectar = true;
 
     public int Gather(int gatherAmount)
     {
@@ -20,6 +21,7 @@ public class Flower : MonoBehaviour, IGatherable
         {
             gatherAmount = nectarAmount;
             nectarAmount = 0;
+            hasNectar = false;
             Wilt();
         }
 
@@ -29,7 +31,7 @@ public class Flower : MonoBehaviour, IGatherable
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameManager.instance;
+        gameManager = GameManager.Instance;
         gameManager.flowers.Add(this.gameObject);
     }
 
@@ -42,12 +44,4 @@ public class Flower : MonoBehaviour, IGatherable
         Debug.Log("Flower is wilting");
         gameManager.flowers.Remove(this.gameObject);
     }
-}
-
-public struct FlowerStruct
-{
-    public GameObject gameObject { get; set; }
-    public Flower flower { get; set; }
-    public float distance { get; set; }
-    public IGatherable gatherable { get; set; }
 }
