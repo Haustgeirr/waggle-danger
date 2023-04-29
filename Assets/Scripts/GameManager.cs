@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public int nectarCollected = 0;
     public int nectarGoal = 10;
 
-    private float tickRate = 1.0f;
+    public float tickRate = 1.0f;
     private float tickTimer = 0.0f;
 
     public static GameManager Instance

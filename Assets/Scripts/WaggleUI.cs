@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class WaggleUI : MonoBehaviour
 {
-    public Image currentDirectionImage;
+    public Image[] directionImages = new Image[4];
 
     // public Sprite perfectSprite;
     // public Sprite goodSprite;
@@ -23,36 +23,48 @@ public class WaggleUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentDirectionImage = GameObject.Find("WaggleDirection").GetComponent<Image>();
+        for (int i = 0; i < directionImages.Length; i++)
+        {
+            directionImages[i] = GameObject.Find("WaggleDirection" + (i)).GetComponent<Image>();
+        }
+
         waggler = GameObject.Find("Waggler").GetComponent<Waggler>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (selectedDirection != waggler.waggleDirection)
+        selectedDirection = waggler.waggleDirection;
+        SetSelectedDirectionSprites();
+    }
+
+    void SetSelectedDirectionSprites()
+    {
+        for (int i = 0; i < directionImages.Length; i++)
         {
-            selectedDirection = waggler.waggleDirection;
-            SetSelectedDirectionSprite();
+            directionImages[i].sprite = GetDirectionSprite(waggler.waggleDirections[i]);
         }
     }
 
-    void SetSelectedDirectionSprite()
+    Sprite GetDirectionSprite(Vector2 direction)
     {
-        switch (selectedDirection)
+        var sprite = upDirection;
+        switch (direction)
         {
             case Vector2 v when v.Equals(Vector2.up):
-                currentDirectionImage.sprite = upDirection;
+                sprite = upDirection;
                 break;
             case Vector2 v when v.Equals(Vector2.right):
-                currentDirectionImage.sprite = rightDirection;
+                sprite = rightDirection;
                 break;
             case Vector2 v when v.Equals(Vector2.down):
-                currentDirectionImage.sprite = downDirection;
+                sprite = downDirection;
                 break;
             case Vector2 v when v.Equals(Vector2.left):
-                currentDirectionImage.sprite = leftDirection;
+                sprite = leftDirection;
                 break;
         }
+
+        return sprite;
     }
 }

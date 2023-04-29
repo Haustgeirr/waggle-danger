@@ -10,6 +10,7 @@ public class Waggler : MonoBehaviour, IEntity
     private GameManager gameManager;
 
     public Vector2 direction;
+    public List<Vector2> waggleDirections = new List<Vector2>();
     public Vector2 waggleDirection;
     private Vector2 inputDirection;
 
@@ -42,7 +43,8 @@ public class Waggler : MonoBehaviour, IEntity
 
     public void Tick()
     {
-        SelectDirection();
+        ResetInput();
+        GetNextDirection();
     }
 
     void OnEnable()
@@ -91,11 +93,37 @@ public class Waggler : MonoBehaviour, IEntity
     {
         gameManager = GameManager.Instance;
         SwarmTarget = GameObject.Find("SwarmTarget");
+
+        for (int i = 0; i < 10; i++)
+        {
+            waggleDirections.Add(SelectDirection());
+        }
     }
 
     void Update()
     {
         inputTimer += Time.deltaTime;
+    }
+
+    void GetNextDirection()
+    {
+        waggleDirections.RemoveAt(0);
+        waggleDirection = waggleDirections[0];
+        waggleDirections.Add(SelectDirection());
+    }
+
+    Vector2 SelectDirection()
+    {
+        if (directionsOptions.Count == 0)
+        {
+            directionsOptions.AddRange(directionsBase);
+        }
+
+        int index = Random.Range(0, directionsOptions.Count);
+        var dir = directionsOptions[index];
+        directionsOptions.RemoveAt(index);
+
+        return dir;
     }
 
     bool CheckMultipleInputs()
@@ -136,20 +164,6 @@ public class Waggler : MonoBehaviour, IEntity
         }
 
         comboMultiplier = comboMultipliers[comboCount];
-    }
-
-    void SelectDirection()
-    {
-        ResetInput();
-
-        if (directionsOptions.Count == 0)
-        {
-            directionsOptions.AddRange(directionsBase);
-        }
-
-        int index = Random.Range(0, directionsOptions.Count);
-        waggleDirection = directionsOptions[index];
-        directionsOptions.RemoveAt(index);
     }
 
     void ResetInput()
