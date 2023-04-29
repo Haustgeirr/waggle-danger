@@ -33,7 +33,7 @@ public class Bee : MonoBehaviour, IEntity
     {
         gameManager = GameManager.Instance;
         gameManager.bees.Add(this.gameObject);
-        gameManager.entities.Add(this.GetComponent<IEntity>());
+        // gameManager.entities.Add(this.GetComponent<IEntity>());
 
         hiveGameObject = GameObject.Find("Hive");
         hiveStorable = hiveGameObject.GetComponent<IStorable>();

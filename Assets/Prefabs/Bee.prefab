@@ -45,8 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd8e483d9624262408c57b8ee32b881e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetFlowerGameObject: {fileID: 0}
+  hiveGameObject: {fileID: 0}
   targetFlowerDistance: 0
+  targetFlowerGameObject: {fileID: 0}
+  hiveDistance: Infinity
+  beeState: 0
   nectarCapacity: 3
   nectarAmount: 0
   hasNectar: 0
@@ -124,7 +127,7 @@ SpriteRenderer:
   m_SortingLayerID: -377965069
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 060ded1c61f7216449cffa87bf4993bb, type: 3}
+  m_Sprite: {fileID: -1702047561, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

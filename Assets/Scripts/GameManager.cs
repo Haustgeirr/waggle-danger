@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -44,6 +45,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        entities.AddRange(FindObjectsOfType<MonoBehaviour>().OfType<IEntity>());
     }
 
     // Update is called once per frame
