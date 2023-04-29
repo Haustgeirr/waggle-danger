@@ -41,7 +41,7 @@ public class Waggler : MonoBehaviour, IEntity
         new Vector2(-1, 0),
     };
 
-    public GameObject SwarmTarget;
+    public GameObject Player;
 
     public void Tick()
     {
@@ -77,9 +77,8 @@ public class Waggler : MonoBehaviour, IEntity
 
             if (!IsInputBlocked())
             {
-                lastDirection = direction;
                 direction = ctx.ReadValue<Vector2>();
-                SwarmTarget.transform.position += new Vector3(direction.x, direction.y, 0);
+                Player.transform.position += new Vector3(direction.x, direction.y, 0);
 
                 ScoreInput();
             }
@@ -90,7 +89,7 @@ public class Waggler : MonoBehaviour, IEntity
     void Start()
     {
         gameManager = GameManager.Instance;
-        SwarmTarget = GameObject.Find("SwarmTarget");
+        Player = GameObject.Find("Player");
 
         for (int i = 0; i < 10; i++)
         {
@@ -183,6 +182,11 @@ public class Waggler : MonoBehaviour, IEntity
             inputBlocked = true;
         }
 
+        if (direction != Vector2.zero)
+        {
+            lastDirection = direction;
+        }
+
         direction = new Vector2(0, 0);
         isPerfect = false;
         isGood = false;
@@ -210,6 +214,6 @@ public class Waggler : MonoBehaviour, IEntity
         Debug.Log("Waggle! " + direction);
         Debug.Log("Combo Count: " + comboCount);
 
-        // SwarmTarget.transform.position += new Vector3(waggleDirection.x, waggleDirection.y, 0);
+        // Player.transform.position += new Vector3(waggleDirection.x, waggleDirection.y, 0);
     }
 }

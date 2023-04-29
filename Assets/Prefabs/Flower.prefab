@@ -47,6 +47,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nectarAmount: 10
   hasNectar: 1
+  flowerSprites:
+  - {fileID: -1898608226, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  - {fileID: 1763939993, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  - {fileID: -66659248, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  - {fileID: 1829532823, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  wiltedSprites:
+  - {fileID: -1155373001, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  - {fileID: 94477003, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  - {fileID: 1787377165, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  - {fileID: 1939622200, guid: fcbd4ecd18ed31f47a9c1a3411b4fda5, type: 3}
+  spriteRenderer: {fileID: 0}
 --- !u!1 &7220141623362717282
 GameObject:
   m_ObjectHideFlags: 0
