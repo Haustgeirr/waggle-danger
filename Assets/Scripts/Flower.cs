@@ -11,8 +11,6 @@ public class Flower : MonoBehaviour, IGatherable
 
     public int Gather(int gatherAmount)
     {
-        Debug.Log("Gathering flower");
-
         if (nectarAmount > gatherAmount)
         {
             nectarAmount -= gatherAmount;

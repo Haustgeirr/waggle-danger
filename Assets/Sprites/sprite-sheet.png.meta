@@ -183,8 +183,8 @@ TextureImporter:
       name: sprite-sheet_3
       rect:
         serializedVersion: 2
-        x: 8
-        y: 112
+        x: 0
+        y: 104
         width: 8
         height: 8
       alignment: 0
@@ -205,7 +205,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 104
+        y: 96
         width: 8
         height: 8
       alignment: 0
@@ -226,7 +226,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 8
-        y: 104
+        y: 96
         width: 8
         height: 8
       alignment: 0
@@ -246,7 +246,7 @@ TextureImporter:
       name: sprite-sheet_6
       rect:
         serializedVersion: 2
-        x: 0
+        x: 16
         y: 96
         width: 8
         height: 8
@@ -267,7 +267,7 @@ TextureImporter:
       name: sprite-sheet_7
       rect:
         serializedVersion: 2
-        x: 8
+        x: 24
         y: 96
         width: 8
         height: 8
@@ -280,6 +280,27 @@ TextureImporter:
       bones: []
       spriteID: 6b04d36220c793f4d89b13c8b458e52a
       internalID: -325019834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sprite-sheet_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 88
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0d46a0f0f7b13143ab9a0705d0bf1b5
+      internalID: 1531592561
       vertices: []
       indices: 
       edges: []
@@ -303,6 +324,7 @@ TextureImporter:
       sprite-sheet_5: -454286577
       sprite-sheet_6: -1476810487
       sprite-sheet_7: -325019834
+      sprite-sheet_8: 1531592561
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -44,8 +44,6 @@ public class Bee : MonoBehaviour, IEntity
 
     public void Tick()
     {
-        Debug.Log("Bee is ticking");
-
         FindNearestFlower();
         CheckBeeState();
 
@@ -66,7 +64,6 @@ public class Bee : MonoBehaviour, IEntity
 
     void Store()
     {
-        Debug.Log("Storing nectar in hive");
         hiveStorable.Store(gatherAmount);
         nectarAmount -= gatherAmount;
     }
@@ -107,8 +104,6 @@ public class Bee : MonoBehaviour, IEntity
 
     void FindNearestFlower()
     {
-        Debug.Log("Finding nearest flower");
-
         float closestDistance = Mathf.Infinity;
         GameObject potentialFlower = null;
 
@@ -125,7 +120,6 @@ public class Bee : MonoBehaviour, IEntity
 
         if (potentialFlower == null)
         {
-            Debug.Log("No flowers found");
             targetFlowerGameObject = null;
             targetFlowerDistance = Mathf.Infinity;
             targetFlowerGatherable = null;
@@ -136,7 +130,5 @@ public class Bee : MonoBehaviour, IEntity
         targetFlowerGameObject = potentialFlower;
         targetFlowerDistance = closestDistance;
         targetFlowerGatherable = targetFlowerGameObject.GetComponent<IGatherable>();
-
-        Debug.Log("Closest flower is " + targetFlowerGameObject.name);
     }
 }

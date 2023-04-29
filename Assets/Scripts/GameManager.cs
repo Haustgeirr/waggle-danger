@@ -63,8 +63,6 @@ public class GameManager : MonoBehaviour
 
     void Tick()
     {
-        Debug.Log("Game is ticking");
-
         foreach (IEntity entity in entities)
         {
             entity.Tick();
