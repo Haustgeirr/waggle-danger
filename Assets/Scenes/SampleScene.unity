@@ -2595,6 +2595,8 @@ MonoBehaviour:
   waggleUI: {fileID: 0}
   winUI: {fileID: 0}
   loseUI: {fileID: 0}
+  scoreText: {fileID: 1075654300}
+  scoreShadow: {fileID: 917456823}
   musicSource: {fileID: 683123215}
   isMusicPlaying: 0
 --- !u!4 &683123214
@@ -3432,7 +3434,7 @@ GameObject:
   - component: {fileID: 917456824}
   - component: {fileID: 917456823}
   m_Layer: 0
-  m_Name: Title
+  m_Name: ScoreShadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4464,7 +4466,7 @@ GameObject:
   - component: {fileID: 1075654301}
   - component: {fileID: 1075654300}
   m_Layer: 0
-  m_Name: Shadow
+  m_Name: ScoreText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4908,7 +4910,7 @@ GameObject:
   - component: {fileID: 1230613377}
   - component: {fileID: 1230613378}
   m_Layer: 0
-  m_Name: Panel
+  m_Name: Score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

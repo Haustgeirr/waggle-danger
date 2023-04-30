@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 public enum GameState
 {
@@ -57,6 +58,8 @@ public class GameManager : MonoBehaviour
     public GameObject waggleUI;
     public GameObject winUI;
     public GameObject loseUI;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI scoreShadow;
 
     [Header("Audio")]
     public AudioSource musicSource;
@@ -230,6 +233,7 @@ public class GameManager : MonoBehaviour
         gameState = GameState.Menu;
         victoryState = VictoryState.None;
         difficulty = 0;
+        score = 0;
 
         flowers.Clear();
         bees.Clear();
@@ -313,6 +317,8 @@ public class GameManager : MonoBehaviour
     {
         if (victoryState == VictoryState.Win)
         {
+            scoreText.text = score.ToString();
+            scoreShadow.text = score.ToString();
             winUI.SetActive(true);
             loseUI.SetActive(false);
         }
