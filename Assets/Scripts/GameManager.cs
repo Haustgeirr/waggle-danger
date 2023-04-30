@@ -35,6 +35,10 @@ public class GameManager : MonoBehaviour
     public int maxFlowerCount = 10;
     public int flowerPlacementRange = 20;
     public int flowerDeadZone = 5;
+    public float flowerRadius = 1.0f;
+
+    public int difficulty = 0;
+    public int difficultyNectarRequirement = 6;
 
     [Header("Game Objects")]
     public GameObject flowerPrefab;
@@ -69,6 +73,13 @@ public class GameManager : MonoBehaviour
     public void CollectNectar(int nectarAmount)
     {
         nectarCollected += nectarAmount;
+
+        var newDifficulty = nectarCollected / difficultyNectarRequirement;
+        if (newDifficulty > difficulty)
+        {
+            difficulty = newDifficulty;
+            crow.SetDifficulty(difficulty);
+        }
     }
 
     // Start is called before the first frame update
@@ -146,30 +157,29 @@ public class GameManager : MonoBehaviour
 
         // poisson disc placement
         var flowerCount = Random.Range(minFlowerCount, maxFlowerCount);
-        var flowerRadius = 2.0f;
         var flowerRadiusSquared = flowerRadius * flowerRadius;
+        var deadZoneSquared = flowerDeadZone * flowerDeadZone;
         var flowerPoints = new List<Vector3>();
 
+        var loopLimit = 1000;
         while (flowerPoints.Count < flowerCount)
         {
-            var x = GenerateDistantRange(
-                -flowerPlacementRange,
-                flowerPlacementRange,
-                flowerDeadZone
-            );
-            var y = GenerateDistantRange(
-                -flowerPlacementRange,
-                flowerPlacementRange,
-                flowerDeadZone
-            );
+            // choose a target within a circle of radius flowerPlacementRange
+            var angle = Random.Range(0f, Mathf.PI * 2f);
+            var distance = Random.Range(0f, flowerPlacementRange);
+            var x = Mathf.Floor(Mathf.Cos(angle) * distance);
+            var y = Mathf.Floor(Mathf.Sin(angle) * distance);
+
             var point = new Vector3(x, y, 0f);
             var tooClose = false;
 
             foreach (var flowerPoint in flowerPoints)
             {
-                var distance = (point - flowerPoint).sqrMagnitude;
+                // discard iff too close to other flower or center
+                var distanceToFlower = (point - flowerPoint).sqrMagnitude;
+                var distanceToCentre = point.sqrMagnitude;
 
-                if (distance < flowerRadiusSquared)
+                if (distanceToFlower < flowerRadiusSquared || distanceToCentre < deadZoneSquared)
                 {
                     tooClose = true;
                     break;
@@ -179,6 +189,14 @@ public class GameManager : MonoBehaviour
             if (!tooClose)
             {
                 flowerPoints.Add(point);
+            }
+
+            loopLimit--;
+
+            if (loopLimit <= 0)
+            {
+                Debug.Log("Loop limit reached");
+                break;
             }
         }
 

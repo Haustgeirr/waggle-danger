@@ -110,8 +110,9 @@ public class Bee : MonoBehaviour, IEntity
 
     void Store()
     {
-        hiveStorable.Store(gatherAmount);
-        nectarAmount -= gatherAmount;
+        var storeAmount = gatherAmount * 2;
+        hiveStorable.Store(storeAmount);
+        nectarAmount -= storeAmount;
     }
 
     // handle all enter/exit state logic here

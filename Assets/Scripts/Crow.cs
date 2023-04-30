@@ -2,6 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct Difficulty
+{
+    public int attackWidth;
+    public int attackDelay;
+    public int minCooldown;
+    public int maxCooldown;
+
+    public Difficulty(int attackWidth, int attackDelay, int minCooldown, int maxCooldown)
+    {
+        this.attackWidth = attackWidth;
+        this.attackDelay = attackDelay;
+        this.minCooldown = minCooldown;
+        this.maxCooldown = maxCooldown;
+    }
+}
+
 public class Crow : MonoBehaviour, IEntity
 {
     public bool isPreparing = false;
@@ -34,6 +50,34 @@ public class Crow : MonoBehaviour, IEntity
     public GameObject telegraphGameObject;
     public TelegraphAnimator telegraph;
 
+    public Difficulty[] difficulties = new Difficulty[]
+    {
+        new Difficulty(3, 4, 16, 26), // Easy
+        new Difficulty(3, 3, 8, 16), // Medium
+        new Difficulty(3, 2, 6, 12) // Hard
+    };
+
+    public void Summon()
+    {
+        attackCooldownTimer /= 2;
+    }
+
+    public void SetDifficulty(int difficulty)
+    {
+        var prevAttackCooldown = attackCooldown;
+        attackWidth = difficulties[difficulty].attackWidth;
+        attackDelay = difficulties[difficulty].attackDelay;
+        attackCooldown = Random.Range(
+            difficulties[difficulty].minCooldown,
+            difficulties[difficulty].maxCooldown
+        );
+
+        if (!isAttacking && !isPreparing)
+        {
+            attackCooldownTimer = Mathf.Min(prevAttackCooldown, attackCooldown);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -54,8 +98,10 @@ public class Crow : MonoBehaviour, IEntity
         if (playerBee.beeState == BeeState.Storing)
         {
             attackDelayTimer = 0;
+            attackCooldownTimer = attackCooldown;
             isPreparing = false;
             isAttacking = false;
+            telegraph.Hide();
             return;
         }
         // lerp position between start and end
@@ -69,7 +115,8 @@ public class Crow : MonoBehaviour, IEntity
             if (!hasAttacked && attackTimer >= gameManager.tickRate / 2f)
             {
                 hasAttacked = true;
-                Attack();
+                AttackPlayer();
+                AttackFlowers();
             }
         }
     }
@@ -154,21 +201,44 @@ public class Crow : MonoBehaviour, IEntity
         telegraph.Show(targetPosition, direction);
     }
 
-    void Attack()
+    void AttackPlayer()
     {
         var playerPosition = player.transform.position;
-        var attackDirection = (endPosition - startPosition).normalized;
 
-        // calculate orthogonal distance to player based on perpendicular direction
-        var perpendicularDirection = new Vector3(attackDirection.y, -attackDirection.x, 0);
-        var perpendicularDistance = Vector3.Dot(
-            playerPosition - targetPosition,
-            perpendicularDirection
-        );
-
-        if (Mathf.Abs(perpendicularDistance) <= attackWidth / 2)
+        if (IsHitByAttack(playerPosition))
         {
             playerBee.GetHit();
         }
+    }
+
+    void AttackFlowers()
+    {
+        var flowers = gameManager.flowers;
+        var hitFlowers = new List<Flower>();
+        foreach (var flower in flowers)
+        {
+            var flowerPosition = flower.transform.position;
+            if (IsHitByAttack(flowerPosition))
+            {
+                // flower.GetComponent<Flower>().GetHit();
+                hitFlowers.Add(flower.GetComponent<Flower>());
+            }
+        }
+
+        foreach (var hitFlower in hitFlowers)
+        {
+            hitFlower.GetHit();
+        }
+    }
+
+    bool IsHitByAttack(Vector3 position)
+    {
+        var attackDirection = (endPosition - startPosition).normalized;
+
+        // calculate orthogonal distance based on perpendicular direction
+        var perpendicularDirection = new Vector3(attackDirection.y, -attackDirection.x, 0);
+        var perpendicularDistance = Vector3.Dot(position - targetPosition, perpendicularDirection);
+
+        return Mathf.Abs(perpendicularDistance) <= attackWidth / 2;
     }
 }

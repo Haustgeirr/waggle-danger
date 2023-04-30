@@ -33,6 +33,11 @@ public class Flower : MonoBehaviour, IGatherable
         return gatherAmount;
     }
 
+    public void GetHit()
+    {
+        Wilt();
+    }
+
     // Start is called before the first frame update
     void Start()
     {

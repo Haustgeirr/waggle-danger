@@ -42,7 +42,10 @@ public class Waggler : MonoBehaviour, IEntity
         new Vector2(-1, 0),
     };
 
-    public GameObject Player;
+    public GameObject player;
+    public Crow crow;
+
+    private float tickDuration = 1.0f;
 
     public void Tick()
     {
@@ -88,10 +91,10 @@ public class Waggler : MonoBehaviour, IEntity
         {
             // var hasMultiple = IsInputBlocked();
 
-            if (!IsInputBlocked())
+            if (!hasReceivedInput)
             {
                 direction = ctx.ReadValue<Vector2>();
-                Player.transform.position += new Vector3(direction.x, direction.y, 0);
+                player.transform.position += new Vector3(direction.x, direction.y, 0);
 
                 ScoreInput();
             }
@@ -102,12 +105,15 @@ public class Waggler : MonoBehaviour, IEntity
     void Start()
     {
         gameManager = GameManager.Instance;
-        Player = GameObject.Find("Player");
+        player = GameObject.Find("Player");
+        crow = GameObject.Find("Crow").GetComponent<Crow>();
 
         for (int i = 0; i < 10; i++)
         {
             waggleDirections.Add(SelectDirection());
         }
+
+        tickDuration = gameManager.tickRate;
     }
 
     void Update()
@@ -143,7 +149,7 @@ public class Waggler : MonoBehaviour, IEntity
             return true;
         }
 
-        if (hasReceivedInput && inputTimer <= earlyAllowance)
+        if (hasReceivedInput && inputTimer <= tickDuration - earlyAllowance)
         {
             Debug.Log("TOo many Inputs!");
             isMiss = true;
@@ -173,6 +179,7 @@ public class Waggler : MonoBehaviour, IEntity
         {
             comboCount = 0;
             inputBlocked = true;
+            crow.Summon();
         }
 
         if (isPerfect)

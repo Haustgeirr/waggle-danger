@@ -676,16 +676,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nectarCollected: 0
-  nectarGoal: 10
+  nectarGoal: 18
   availableNectar: 0
   tickRate: 0.75
   tickTimer: 0
   gameState: 0
   victoryState: 0
-  minFlowerCount: 3
-  maxFlowerCount: 10
-  flowerPlacementRange: 8
+  minFlowerCount: 24
+  maxFlowerCount: 48
+  flowerPlacementRange: 10
   flowerDeadZone: 3
+  flowerRadius: 1
+  difficulty: 0
+  difficultyNectarRequirement: 6
   flowerPrefab: {fileID: 7220141622545990834, guid: e58bb50ef5ffa00498b6676faa20f649, type: 3}
   flowers: []
   bees: []
@@ -2137,7 +2140,8 @@ MonoBehaviour:
   isMiss: 0
   hasReceivedInput: 0
   directionsOptions: []
-  Player: {fileID: 0}
+  player: {fileID: 0}
+  crow: {fileID: 0}
 --- !u!4 &2046753980
 Transform:
   m_ObjectHideFlags: 0
@@ -6520,10 +6524,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2185297728952093604, guid: 5d4d744eea0d3274fa4ea3c110c58d62, type: 3}
-      propertyPath: enterHive
-      value: 
-      objectReference: {fileID: 8300000, guid: daac6f6318db1df4d93065aa80a1059d, type: 3}
     - target: {fileID: 8601011732408242549, guid: 5d4d744eea0d3274fa4ea3c110c58d62, type: 3}
       propertyPath: m_RootOrder
       value: 6
