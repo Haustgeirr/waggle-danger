@@ -95,6 +95,7 @@ public class Crow : MonoBehaviour, IEntity
 
         cameraObject = GameObject.Find("Main Camera");
         cameraShake = cameraObject.GetComponentInChildren<CameraShake>();
+        SetDifficulty(0);
     }
 
     // Update is called once per frame
@@ -107,6 +108,7 @@ public class Crow : MonoBehaviour, IEntity
             isPreparing = false;
             isAttacking = false;
             telegraph.Hide();
+            audioSource.Stop();
             return;
         }
         // lerp position between start and end
@@ -134,6 +136,7 @@ public class Crow : MonoBehaviour, IEntity
         isAttacking = false;
         sprite.SetActive(false);
         telegraph.Hide();
+        SetDifficulty(0);
     }
 
     public void Tick()

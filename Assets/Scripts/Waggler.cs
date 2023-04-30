@@ -42,7 +42,7 @@ public class Waggler : MonoBehaviour, IEntity
         new Vector2(-1, 0),
     };
 
-    public GameObject player;
+    public Bee player;
     public Crow crow;
 
     private float tickDuration = 1.0f;
@@ -91,6 +91,11 @@ public class Waggler : MonoBehaviour, IEntity
         {
             // var hasMultiple = IsInputBlocked();
 
+            if (player.beeState == BeeState.Storing)
+            {
+                return;
+            }
+
             if (!IsInputBlocked())
             {
                 direction = ctx.ReadValue<Vector2>();
@@ -105,7 +110,7 @@ public class Waggler : MonoBehaviour, IEntity
     void Start()
     {
         gameManager = GameManager.Instance;
-        player = GameObject.Find("Player");
+        player = GameObject.Find("Player").GetComponent<Bee>();
         crow = GameObject.Find("Crow").GetComponent<Crow>();
 
         for (int i = 0; i < 10; i++)
@@ -152,12 +157,20 @@ public class Waggler : MonoBehaviour, IEntity
         if (hasReceivedInput)
         {
             Debug.Log("Too many Inputs!");
-            isMiss = true;
+            HandleMiss();
             return true;
         }
 
         hasReceivedInput = true;
         return false;
+    }
+
+    void HandleMiss()
+    {
+        player.PlaySound(player.missInput);
+        crow.Summon();
+        comboCount = 0;
+        isMiss = true;
     }
 
     void ScoreInput()
@@ -177,9 +190,7 @@ public class Waggler : MonoBehaviour, IEntity
 
         if (isMiss)
         {
-            comboCount = 0;
-            inputBlocked = true;
-            crow.Summon();
+            HandleMiss();
         }
 
         if (isPerfect)

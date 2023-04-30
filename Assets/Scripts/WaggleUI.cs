@@ -32,6 +32,10 @@ public class WaggleUI : MonoBehaviour
     void Update()
     {
         selectedDirection = waggler.direction;
+        if (selectedDirection == Vector2.zero)
+        {
+            selectedDirection = waggler.lastDirection;
+        }
         SetSelectedDirectionSprites();
     }
 

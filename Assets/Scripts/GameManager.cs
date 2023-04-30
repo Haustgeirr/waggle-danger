@@ -128,8 +128,8 @@ public class GameManager : MonoBehaviour
 
         if (gameState == GameState.Playing)
         {
-            TickGame();
             CheckGameCondition();
+            TickGame();
         }
     }
 
@@ -221,11 +221,10 @@ public class GameManager : MonoBehaviour
     void StartGame()
     {
         nectarCollected = 0;
-
-        nectarGoal = 10;
         tickTimer = 0.0f;
         gameState = GameState.Menu;
         victoryState = VictoryState.None;
+        difficulty = 0;
 
         flowers.Clear();
         bees.Clear();

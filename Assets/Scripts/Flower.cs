@@ -15,11 +15,14 @@ public class Flower : MonoBehaviour, IGatherable
     public SpriteRenderer spriteRenderer;
 
     public ParticleSystem wiltEffect;
+    public ParticleSystem gatherEffect;
 
     private int flowerVariant = 0;
 
     public int Gather(int gatherAmount)
     {
+        gatherEffect.Play();
+
         if (nectarAmount > gatherAmount)
         {
             nectarAmount -= gatherAmount;
@@ -50,7 +53,7 @@ public class Flower : MonoBehaviour, IGatherable
         // set flower variant
         flowerVariant = Random.Range(0, flowerSprites.Length);
         spriteRenderer.sprite = flowerSprites[flowerVariant];
-        wiltEffect = GetComponentInChildren<ParticleSystem>();
+        spriteRenderer.flipX = Random.Range(0, 2) == 0;
     }
 
     // Update is called once per frame

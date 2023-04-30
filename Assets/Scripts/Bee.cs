@@ -38,6 +38,16 @@ public class Bee : MonoBehaviour, IEntity
     public AudioClip buzz;
     public AudioClip gather;
     public AudioClip enterHive;
+    public AudioClip loseNectar;
+    public AudioClip missInput;
+    public AudioClip nectarCollect;
+
+    public void PlaySound(AudioClip clip, float pitch = 1f)
+    {
+        audioSource.pitch = pitch;
+        audioSource.clip = clip;
+        audioSource.Play();
+    }
 
     public void Init()
     {
@@ -116,6 +126,8 @@ public class Bee : MonoBehaviour, IEntity
 
     void Store()
     {
+        PlaySound(nectarCollect);
+        beeAnimator.GetNectar();
         var storeAmount = gatherAmount * 2;
         hiveStorable.Store(storeAmount);
         nectarAmount -= storeAmount;
@@ -147,11 +159,13 @@ public class Bee : MonoBehaviour, IEntity
 
     void Gather()
     {
-        beeAnimator.GetNectar();
         var toGather = Mathf.Min(gatherAmount, nectarCapacity - nectarAmount);
         var amountGathered = targetFlowerGatherable.Gather(toGather);
 
         nectarAmount += amountGathered;
+
+        var pitch = Mathf.Lerp(0.8f, 1.2f, nectarAmount / (float)nectarCapacity);
+        PlaySound(gather, pitch);
     }
 
     void FindNearestFlower()
@@ -186,6 +200,7 @@ public class Bee : MonoBehaviour, IEntity
 
     void KnockOutNectar()
     {
+        PlaySound(loseNectar);
         nectarAmount = 0;
     }
 
@@ -206,8 +221,7 @@ public class Bee : MonoBehaviour, IEntity
     void SetInHive(bool inHive)
     {
         SetSpriteVisible(!inHive);
-        audioSource.clip = enterHive;
-        audioSource.Play();
+        PlaySound(enterHive);
     }
 
     void OnEnterState(BeeState state)
