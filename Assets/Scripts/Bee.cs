@@ -28,22 +28,36 @@ public class Bee : MonoBehaviour, IEntity
     private float interactionRange = 0.5f;
     private int gatherAmount = 1;
 
-    // Start is called before the first frame update
-    void Start()
+    public void Init()
     {
         gameManager = GameManager.Instance;
         gameManager.bees.Add(this.gameObject);
-        // gameManager.entities.Add(this.GetComponent<IEntity>());
 
         hiveGameObject = GameObject.Find("Hive");
         hiveStorable = hiveGameObject.GetComponent<IStorable>();
 
         targetFlowerDistance = Mathf.Infinity;
         hiveDistance = Mathf.Infinity;
+
+        beeState = BeeState.Storing;
+        nectarAmount = 0;
+        hasNectar = false;
+        isFull = false;
+
+        transform.position = hiveGameObject.transform.position;
     }
 
-    // Update is called once per frame
-    void Update() { }
+    public void GetHit()
+    {
+        if (nectarAmount > 0)
+        {
+            KnockOutNectar();
+        }
+        else
+        {
+            Knockout();
+        }
+    }
 
     public void Tick()
     {
@@ -64,6 +78,23 @@ public class Bee : MonoBehaviour, IEntity
 
         CheckNectarAmount();
     }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        gameManager = GameManager.Instance;
+        gameManager.bees.Add(this.gameObject);
+        // gameManager.entities.Add(this.GetComponent<IEntity>());
+
+        hiveGameObject = GameObject.Find("Hive");
+        hiveStorable = hiveGameObject.GetComponent<IStorable>();
+
+        targetFlowerDistance = Mathf.Infinity;
+        hiveDistance = Mathf.Infinity;
+    }
+
+    // Update is called once per frame
+    void Update() { }
 
     void Store()
     {
@@ -133,5 +164,16 @@ public class Bee : MonoBehaviour, IEntity
         targetFlowerGameObject = potentialFlower;
         targetFlowerDistance = closestDistance;
         targetFlowerGatherable = targetFlowerGameObject.GetComponent<IGatherable>();
+    }
+
+    void KnockOutNectar()
+    {
+        nectarAmount = 0;
+    }
+
+    void Knockout()
+    {
+        gameManager.bees.Remove(this.gameObject);
+        this.gameObject.SetActive(false);
     }
 }

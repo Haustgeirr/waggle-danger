@@ -14,12 +14,14 @@ public class Crow : MonoBehaviour, IEntity
     public int attackWidth = 3;
     public int attackDelay = 3;
     public int attackDelayTimer = 0;
+    public int initialAttackCooldown = 24;
     public int attackCooldown = 3;
     public int attackCooldownTimer = 0;
 
     private float attackTimer;
 
     private GameObject player;
+    private Bee playerBee;
     private Waggler waggler;
     private GameManager gameManager;
     private int attackDistance = 8;
@@ -33,6 +35,7 @@ public class Crow : MonoBehaviour, IEntity
     {
         gameManager = GameManager.Instance;
         player = GameObject.Find("Player");
+        playerBee = player.GetComponent<Bee>();
         waggler = GameObject.Find("Waggler").GetComponent<Waggler>();
 
         telegraphGameObject = GameObject.Find("CrowAttackWarning");
@@ -51,8 +54,21 @@ public class Crow : MonoBehaviour, IEntity
         }
     }
 
+    public void Init()
+    {
+        attackCooldownTimer = initialAttackCooldown;
+        attackDelayTimer = 0;
+        isPreparing = false;
+        isAttacking = false;
+    }
+
     public void Tick()
     {
+        if (playerBee.beeState == BeeState.Storing)
+        {
+            return;
+        }
+
         if (attackCooldownTimer > 0)
         {
             attackCooldownTimer--;
@@ -61,6 +77,7 @@ public class Crow : MonoBehaviour, IEntity
 
         if (isAttacking)
         {
+            Attack();
             telegraph.Hide();
             isAttacking = false;
             attackTimer = 0.0f;
@@ -75,7 +92,8 @@ public class Crow : MonoBehaviour, IEntity
             {
                 isPreparing = false;
                 attackDelayTimer = 0;
-                Attack();
+                isAttacking = true;
+                attackTimer = 0.0f;
             }
 
             return;
@@ -113,9 +131,6 @@ public class Crow : MonoBehaviour, IEntity
 
     void Attack()
     {
-        isAttacking = true;
-        attackTimer = 0.0f;
-
         var playerPosition = player.transform.position;
         var attackDirection = (endPosition - startPosition).normalized;
         var perpendicular = new Vector3(attackDirection.y, -attackDirection.x, 0);
@@ -124,6 +139,7 @@ public class Crow : MonoBehaviour, IEntity
         if (Mathf.Abs(perpendicularDistance) <= attackWidth / 2)
         {
             Debug.Log("Player hit!");
+            playerBee.GetHit();
         }
     }
 }

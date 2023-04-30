@@ -10,6 +10,13 @@ public enum GameState
     GameOver
 }
 
+public enum VictoryState
+{
+    None,
+    Win,
+    Lose
+}
+
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
@@ -17,22 +24,34 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     public int nectarCollected = 0;
     public int nectarGoal = 10;
+    public int availableNectar = 0;
     public float tickRate = 1.0f;
     public float tickTimer = 0.0f;
     public GameState gameState = GameState.Menu;
+    public VictoryState victoryState = VictoryState.None;
+
+    [Header("Gameplay Settings")]
+    public int minFlowerCount = 3;
+    public int maxFlowerCount = 10;
+    public int flowerPlacementRange = 20;
+    public int flowerDeadZone = 5;
 
     [Header("Game Objects")]
+    public GameObject flowerPrefab;
     public List<GameObject> flowers = new List<GameObject>();
     public List<GameObject> bees = new List<GameObject>();
     public List<IEntity> entities = new List<IEntity>();
     public Waggler waggler;
     public GameObject player;
-    public GameObject crow;
+    public Bee playerBee;
+    public GameObject crowObject;
+    public Crow crow;
 
     [Header("UI Objects")]
     public GameObject menuUI;
-    public GameObject gameOverUI;
     public GameObject waggleUI;
+    public GameObject winUI;
+    public GameObject loseUI;
 
     public static GameManager Instance
     {
@@ -50,11 +69,6 @@ public class GameManager : MonoBehaviour
     public void CollectNectar(int nectarAmount)
     {
         nectarCollected += nectarAmount;
-
-        if (nectarCollected >= nectarGoal)
-        {
-            WinGame();
-        }
     }
 
     // Start is called before the first frame update
@@ -68,53 +82,221 @@ public class GameManager : MonoBehaviour
         entities.AddRange(FindObjectsOfType<MonoBehaviour>().OfType<IEntity>());
         waggler = GameObject.Find("Waggler").GetComponent<Waggler>();
         player = GameObject.Find("Player");
-        crow = GameObject.Find("Crow");
+        playerBee = player.GetComponent<Bee>();
+        crowObject = GameObject.Find("Crow");
+        crow = crowObject.GetComponent<Crow>();
 
         menuUI = GameObject.Find("MenuUI");
-        gameOverUI = GameObject.Find("GameOverUI");
         waggleUI = GameObject.Find("WaggleUI");
+        winUI = GameObject.Find("WinUI");
+        loseUI = GameObject.Find("LoseUI");
     }
 
     // Update is called once per frame
     void Update()
     {
         HandleGameState();
+
+        if (Input.GetKeyDown(KeyCode.Space) && gameState != GameState.Playing)
+        {
+            SpaceAction();
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape) && gameState == GameState.Menu)
         {
             gameState = GameState.Playing;
+            return;
         }
-        else if (Input.GetKeyDown(KeyCode.Escape) && gameState == GameState.Playing)
+
+        if (Input.GetKeyDown(KeyCode.Escape) && gameState == GameState.Playing)
         {
             gameState = GameState.Menu;
+            return;
         }
 
         if (gameState == GameState.Playing)
         {
             TickGame();
+            CheckGameCondition();
+        }
+    }
+
+    void SpaceAction()
+    {
+        if (gameState == GameState.Menu)
+        {
+            StartGame();
+        }
+
+        if (gameState == GameState.GameOver)
+        {
+            StartGame();
+        }
+    }
+
+    void PlaceFlowers()
+    {
+        //destroy all flowers
+        var flowersToDestroy = FindObjectsOfType<Flower>();
+        foreach (var flower in flowersToDestroy)
+        {
+            Destroy(flower.gameObject);
+        }
+
+        // poisson disc placement
+        var flowerCount = Random.Range(minFlowerCount, maxFlowerCount);
+        var flowerRadius = 2.0f;
+        var flowerRadiusSquared = flowerRadius * flowerRadius;
+        var flowerPoints = new List<Vector3>();
+
+        while (flowerPoints.Count < flowerCount)
+        {
+            var x = GenerateDistantRange(
+                -flowerPlacementRange,
+                flowerPlacementRange,
+                flowerDeadZone
+            );
+            var y = GenerateDistantRange(
+                -flowerPlacementRange,
+                flowerPlacementRange,
+                flowerDeadZone
+            );
+            var point = new Vector3(x, y, 0f);
+            var tooClose = false;
+
+            foreach (var flowerPoint in flowerPoints)
+            {
+                var distance = (point - flowerPoint).sqrMagnitude;
+
+                if (distance < flowerRadiusSquared)
+                {
+                    tooClose = true;
+                    break;
+                }
+            }
+
+            if (!tooClose)
+            {
+                flowerPoints.Add(point);
+            }
+        }
+
+        foreach (var point in flowerPoints)
+        {
+            var flower = Instantiate(flowerPrefab);
+            flower.transform.position = point;
+            flowers.Add(flower);
+        }
+    }
+
+    int GenerateDistantRange(int min, int max, int separation)
+    {
+        var halfRange = (max - min) / 2;
+        var minRange = Random.Range(min, halfRange - separation);
+        var maxRange = Random.Range(halfRange + separation, max);
+
+        var roll = Random.Range(0, 2);
+        return roll == 0 ? minRange : maxRange;
+    }
+
+    void StartGame()
+    {
+        nectarCollected = 0;
+
+        nectarGoal = 10;
+        tickTimer = 0.0f;
+        gameState = GameState.Menu;
+        victoryState = VictoryState.None;
+
+        flowers.Clear();
+        bees.Clear();
+        // entities.Clear();
+
+        PlaceFlowers();
+        CalculateAvailableNectar();
+
+        // entities.AddRange(FindObjectsOfType<MonoBehaviour>().OfType<IEntity>());
+
+        playerBee.Init();
+        waggler.Init();
+        crow.Init();
+
+        gameState = GameState.Playing;
+    }
+
+    void CalculateAvailableNectar()
+    {
+        availableNectar = 0;
+
+        foreach (var flower in flowers)
+        {
+            availableNectar += flower.GetComponent<Flower>().nectarAmount;
+        }
+    }
+
+    void CheckGameCondition()
+    {
+        if (nectarCollected >= nectarGoal)
+        {
+            WinGame();
+        }
+
+        if (bees.Count == 0)
+        {
+            LoseGame();
+        }
+
+        if (flowers.Count == 0)
+        {
+            var nectarDiff = nectarGoal - nectarCollected;
+            var hasEnoughNectar = playerBee.nectarAmount >= nectarDiff;
+
+            if (!hasEnoughNectar)
+            {
+                LoseGame();
+            }
         }
     }
 
     void HandleGameState()
     {
-        Debug.Log("handle menu");
-
         if (gameState == GameState.Playing)
         {
             menuUI.SetActive(false);
-            gameOverUI.SetActive(false);
             SetPlayActive(true);
+            HandleVictoryState();
         }
         else if (gameState == GameState.GameOver)
         {
             menuUI.SetActive(false);
-            gameOverUI.SetActive(true);
             SetPlayActive(false);
+            HandleVictoryState();
         }
         else
         {
             menuUI.SetActive(true);
-            gameOverUI.SetActive(false);
             SetPlayActive(false);
+            HandleVictoryState();
+        }
+    }
+
+    void HandleVictoryState()
+    {
+        if (victoryState == VictoryState.Win)
+        {
+            winUI.SetActive(true);
+            loseUI.SetActive(false);
+        }
+        else if (victoryState == VictoryState.Lose)
+        {
+            winUI.SetActive(false);
+            loseUI.SetActive(true);
+        }
+        else
+        {
+            winUI.SetActive(false);
+            loseUI.SetActive(false);
         }
     }
 
@@ -123,7 +305,7 @@ public class GameManager : MonoBehaviour
         player.SetActive(active);
         waggler.gameObject.SetActive(active);
         waggleUI.SetActive(active);
-        crow.SetActive(active);
+        crowObject.SetActive(active);
     }
 
     void TickGame()
@@ -144,10 +326,12 @@ public class GameManager : MonoBehaviour
     void WinGame()
     {
         Debug.Log("You win!");
+        victoryState = VictoryState.Win;
     }
 
     void LoseGame()
     {
         Debug.Log("You lose!");
+        victoryState = VictoryState.Lose;
     }
 }

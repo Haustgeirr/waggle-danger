@@ -46,7 +46,19 @@ public class Waggler : MonoBehaviour, IEntity
     public void Tick()
     {
         ResetInput();
-        // GetNextDirection();
+    }
+
+    public void Init()
+    {
+        direction = new Vector2(0, 0);
+        lastDirection = new Vector2(0, 0);
+        isPerfect = false;
+        isGood = false;
+        isMiss = false;
+        hasReceivedInput = false;
+        inputTimer = 0.0f;
+        comboCount = 0;
+        comboMultiplier = comboMultipliers[0];
     }
 
     void OnEnable()
