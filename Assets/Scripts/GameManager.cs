@@ -21,7 +21,8 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
 
-    [Header("Game Settings")]
+    [Header("Game Rules")]
+    public int score = 0;
     public int nectarCollected = 0;
     public int nectarGoal = 10;
     public int availableNectar = 0;
@@ -77,6 +78,8 @@ public class GameManager : MonoBehaviour
     public void CollectNectar(int nectarAmount)
     {
         nectarCollected += nectarAmount;
+
+        score += nectarAmount * waggler.comboMultiplier;
 
         var newDifficulty = nectarCollected / difficultyNectarRequirement;
         if (newDifficulty > difficulty)

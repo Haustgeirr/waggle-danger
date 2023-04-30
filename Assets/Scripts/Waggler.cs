@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Waggler : MonoBehaviour, IEntity
 {
-    public static int[] comboMultipliers = new int[] { 1, 2, 4, 8, 16 };
+    public static int[] comboMultipliers = new int[] { 1, 2, 4, 8, 8, 16, 16, 32, 32, 32, 32, 64 };
 
     private GameManager gameManager;
 
@@ -17,7 +17,7 @@ public class Waggler : MonoBehaviour, IEntity
 
     public int comboCount = 0;
     public int comboMultiplier = comboMultipliers[0];
-    private int maxComboCount = 4;
+    private int maxComboCount = 12;
 
     [Header("Input Settings")]
     public InputAction directionInput;
@@ -46,6 +46,12 @@ public class Waggler : MonoBehaviour, IEntity
     public Crow crow;
 
     private float tickDuration = 1.0f;
+
+    public void ResetCombo()
+    {
+        comboCount = 0;
+        comboMultiplier = comboMultipliers[0];
+    }
 
     public void Tick()
     {
@@ -169,7 +175,7 @@ public class Waggler : MonoBehaviour, IEntity
     {
         player.PlaySound(player.missInput);
         crow.Summon();
-        comboCount = 0;
+        ResetCombo();
         isMiss = true;
     }
 

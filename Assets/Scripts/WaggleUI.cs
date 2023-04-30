@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class WaggleUI : MonoBehaviour
 {
@@ -21,11 +22,17 @@ public class WaggleUI : MonoBehaviour
     private Waggler waggler;
     private Sprite selectedDirectionSprite;
 
+    private TextMeshProUGUI comboText;
+    private TextMeshProUGUI multiplierText;
+
     // Start is called before the first frame update
     void Start()
     {
         directionImages[0] = GameObject.Find("WaggleDirection0").GetComponent<Image>();
         waggler = GameObject.Find("Waggler").GetComponent<Waggler>();
+
+        comboText = GameObject.Find("ComboText").GetComponent<TextMeshProUGUI>();
+        multiplierText = GameObject.Find("MultiplierText").GetComponent<TextMeshProUGUI>();
     }
 
     // Update is called once per frame
@@ -36,7 +43,35 @@ public class WaggleUI : MonoBehaviour
         {
             selectedDirection = waggler.lastDirection;
         }
+
         SetSelectedDirectionSprites();
+        SetComboText();
+        SetMultiplierText();
+    }
+
+    void SetComboText()
+    {
+        var text = "";
+
+        if (waggler.isPerfect)
+        {
+            text = "Perfect!";
+        }
+        else if (waggler.isGood)
+        {
+            text = "Good!";
+        }
+        else if (waggler.isMiss)
+        {
+            text = "Miss!";
+        }
+
+        comboText.text = text;
+    }
+
+    void SetMultiplierText()
+    {
+        multiplierText.text = waggler.comboMultiplier.ToString();
     }
 
     void SetSelectedDirectionSprites()

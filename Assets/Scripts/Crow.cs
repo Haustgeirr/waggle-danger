@@ -217,6 +217,7 @@ public class Crow : MonoBehaviour, IEntity
         {
             cameraShake.Shake(gameManager.tickRate / 2f, 0.8f, 0.5f);
             playerBee.GetHit();
+            waggler.ResetCombo();
             return;
         }
         cameraShake.Shake(gameManager.tickRate / 2f, 0.4f, 2f);
