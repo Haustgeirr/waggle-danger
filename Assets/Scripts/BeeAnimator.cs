@@ -65,7 +65,11 @@ public class BeeAnimator : MonoBehaviour
 
     void FlipSpriteDirection()
     {
-        if (gameManager.waggler.direction == Vector2.zero)
+        var dir = gameManager.waggler.direction;
+        var isRight = dir == Vector2.right;
+        var isLeft = dir == Vector2.left;
+
+        if (!isRight && !isLeft)
         {
             return;
         }

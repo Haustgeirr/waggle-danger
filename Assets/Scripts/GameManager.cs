@@ -326,12 +326,14 @@ public class GameManager : MonoBehaviour
     void WinGame()
     {
         Debug.Log("You win!");
+        gameState = GameState.GameOver;
         victoryState = VictoryState.Win;
     }
 
     void LoseGame()
     {
         Debug.Log("You lose!");
+        gameState = GameState.GameOver;
         victoryState = VictoryState.Lose;
     }
 }

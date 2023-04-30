@@ -27,6 +27,7 @@ public class Waggler : MonoBehaviour, IEntity
     public float inputTimer = 0.0f;
     public float perfectDuration = 0.2f;
     public float goodDuration = 0.4f;
+    public float earlyAllowance = 0.1f;
     public bool isPerfect = false;
     public bool isGood = false;
     public bool isMiss = false;
@@ -142,7 +143,7 @@ public class Waggler : MonoBehaviour, IEntity
             return true;
         }
 
-        if (hasReceivedInput)
+        if (hasReceivedInput && inputTimer <= earlyAllowance)
         {
             Debug.Log("TOo many Inputs!");
             isMiss = true;

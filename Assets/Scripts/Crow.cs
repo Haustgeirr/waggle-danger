@@ -11,6 +11,7 @@ public class Crow : MonoBehaviour, IEntity
     public Vector3 startPosition;
     public Vector3 endPosition;
 
+    public int attackDistance = 8;
     public int attackWidth = 3;
     public int attackDelay = 3;
     public int attackDelayTimer = 0;
@@ -24,7 +25,7 @@ public class Crow : MonoBehaviour, IEntity
     private Bee playerBee;
     private Waggler waggler;
     private GameManager gameManager;
-    private int attackDistance = 8;
+    private GameObject sprite;
 
     [Header("Telegraph Settings")]
     public GameObject telegraphGameObject;
@@ -39,15 +40,24 @@ public class Crow : MonoBehaviour, IEntity
         waggler = GameObject.Find("Waggler").GetComponent<Waggler>();
 
         telegraphGameObject = GameObject.Find("CrowAttackWarning");
+        sprite = GetComponentInChildren<SpriteRenderer>().gameObject;
         telegraph = telegraphGameObject.GetComponentInChildren<TelegraphAnimator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (playerBee.beeState == BeeState.Storing)
+        {
+            attackDelayTimer = 0;
+            isPreparing = false;
+            isAttacking = false;
+            return;
+        }
         // lerp position between start and end
         if (isAttacking)
         {
+            sprite.SetActive(true);
             attackTimer += Time.deltaTime;
             var t = Mathf.Clamp01(attackTimer / gameManager.tickRate);
             transform.position = Vector3.Lerp(startPosition, endPosition, t);
@@ -60,15 +70,12 @@ public class Crow : MonoBehaviour, IEntity
         attackDelayTimer = 0;
         isPreparing = false;
         isAttacking = false;
+        sprite.SetActive(false);
+        telegraph.Hide();
     }
 
     public void Tick()
     {
-        if (playerBee.beeState == BeeState.Storing)
-        {
-            return;
-        }
-
         if (attackCooldownTimer > 0)
         {
             attackCooldownTimer--;
@@ -77,6 +84,7 @@ public class Crow : MonoBehaviour, IEntity
 
         if (isAttacking)
         {
+            sprite.SetActive(false);
             Attack();
             telegraph.Hide();
             isAttacking = false;
@@ -126,6 +134,12 @@ public class Crow : MonoBehaviour, IEntity
             0,
             Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90
         );
+
+        sprite.transform.rotation = Quaternion.Euler(
+            0,
+            0,
+            Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90
+        );
         telegraph.Show(targetPosition, direction);
     }
 
@@ -133,12 +147,16 @@ public class Crow : MonoBehaviour, IEntity
     {
         var playerPosition = player.transform.position;
         var attackDirection = (endPosition - startPosition).normalized;
-        var perpendicular = new Vector3(attackDirection.y, -attackDirection.x, 0);
-        var perpendicularDistance = Vector3.Dot(attackDirection, perpendicular);
+
+        // calculate orthogonal distance to player based on perpendicular direction
+        var perpendicularDirection = new Vector3(attackDirection.y, -attackDirection.x, 0);
+        var perpendicularDistance = Vector3.Dot(
+            playerPosition - targetPosition,
+            perpendicularDirection
+        );
 
         if (Mathf.Abs(perpendicularDistance) <= attackWidth / 2)
         {
-            Debug.Log("Player hit!");
             playerBee.GetHit();
         }
     }
