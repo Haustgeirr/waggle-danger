@@ -20,12 +20,15 @@ public class Crow : MonoBehaviour, IEntity
     public int attackCooldownTimer = 0;
 
     private float attackTimer;
+    private bool hasAttacked = false;
 
     private GameObject player;
     private Bee playerBee;
     private Waggler waggler;
     private GameManager gameManager;
     private GameObject sprite;
+
+    private AudioSource audioSource;
 
     [Header("Telegraph Settings")]
     public GameObject telegraphGameObject;
@@ -42,6 +45,7 @@ public class Crow : MonoBehaviour, IEntity
         telegraphGameObject = GameObject.Find("CrowAttackWarning");
         sprite = GetComponentInChildren<SpriteRenderer>().gameObject;
         telegraph = telegraphGameObject.GetComponentInChildren<TelegraphAnimator>();
+        audioSource = GameObject.Find("CrowAudioSource").GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -61,6 +65,12 @@ public class Crow : MonoBehaviour, IEntity
             attackTimer += Time.deltaTime;
             var t = Mathf.Clamp01(attackTimer / gameManager.tickRate);
             transform.position = Vector3.Lerp(startPosition, endPosition, t);
+
+            if (!hasAttacked && attackTimer >= gameManager.tickRate / 2f)
+            {
+                hasAttacked = true;
+                Attack();
+            }
         }
     }
 
@@ -85,9 +95,9 @@ public class Crow : MonoBehaviour, IEntity
         if (isAttacking)
         {
             sprite.SetActive(false);
-            Attack();
             telegraph.Hide();
             isAttacking = false;
+            hasAttacked = false;
             attackTimer = 0.0f;
             attackCooldownTimer = attackCooldown;
             return;
@@ -102,6 +112,7 @@ public class Crow : MonoBehaviour, IEntity
                 attackDelayTimer = 0;
                 isAttacking = true;
                 attackTimer = 0.0f;
+                audioSource.Play();
             }
 
             return;

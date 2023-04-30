@@ -16,6 +16,9 @@ public class Bee : MonoBehaviour, IEntity
     public GameObject targetFlowerGameObject;
     public float hiveDistance;
     public BeeState beeState = BeeState.Buzzing;
+    public BeeState previousBeeState = BeeState.Buzzing;
+    public SpriteRenderer[] spriteRenderers;
+    public AudioSource audioSource;
 
     public int nectarCapacity = 10;
     public int nectarAmount = 0;
@@ -25,8 +28,13 @@ public class Bee : MonoBehaviour, IEntity
     private IGatherable targetFlowerGatherable;
     private IStorable hiveStorable;
     private GameManager gameManager;
-    private float interactionRange = 0.5f;
+    public float interactionRange = 0.5f;
     private int gatherAmount = 1;
+
+    [Header("Audio")]
+    public AudioClip buzz;
+    public AudioClip gather;
+    public AudioClip enterHive;
 
     public void Init()
     {
@@ -62,7 +70,8 @@ public class Bee : MonoBehaviour, IEntity
     public void Tick()
     {
         FindNearestFlower();
-        CheckBeeState();
+        var newState = CheckBeeState();
+        TransitionState(newState);
 
         switch (beeState)
         {
@@ -91,6 +100,9 @@ public class Bee : MonoBehaviour, IEntity
 
         targetFlowerDistance = Mathf.Infinity;
         hiveDistance = Mathf.Infinity;
+
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -103,23 +115,21 @@ public class Bee : MonoBehaviour, IEntity
     }
 
     // handle all enter/exit state logic here
-    void CheckBeeState()
+    BeeState CheckBeeState()
     {
         hiveDistance = Vector3.Distance(transform.position, hiveGameObject.transform.position);
 
         if (hiveDistance <= interactionRange && hasNectar)
         {
-            beeState = BeeState.Storing;
-            return;
+            return BeeState.Storing;
         }
 
         if (targetFlowerGameObject && targetFlowerDistance <= interactionRange && !isFull)
         {
-            beeState = BeeState.Gathering;
-            return;
+            return BeeState.Gathering;
         }
 
-        beeState = BeeState.Buzzing;
+        return BeeState.Buzzing;
     }
 
     void CheckNectarAmount()
@@ -175,5 +185,66 @@ public class Bee : MonoBehaviour, IEntity
     {
         gameManager.bees.Remove(this.gameObject);
         this.gameObject.SetActive(false);
+    }
+
+    void SetSpriteVisible(bool visible)
+    {
+        foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+        {
+            spriteRenderer.enabled = visible;
+        }
+    }
+
+    void SetInHive(bool inHive)
+    {
+        SetSpriteVisible(!inHive);
+        audioSource.clip = enterHive;
+        audioSource.Play();
+    }
+
+    void OnEnterState(BeeState state)
+    {
+        switch (state)
+        {
+            case BeeState.Buzzing:
+                break;
+            case BeeState.Gathering:
+                break;
+            case BeeState.Storing:
+                SetInHive(true);
+                break;
+        }
+    }
+
+    void OnExitState(BeeState state)
+    {
+        switch (state)
+        {
+            case BeeState.Buzzing:
+                break;
+            case BeeState.Gathering:
+                break;
+            case BeeState.Storing:
+                SetInHive(false);
+                break;
+        }
+    }
+
+    void OnStateChange(BeeState state)
+    {
+        OnExitState(previousBeeState);
+        OnEnterState(state);
+    }
+
+    void TransitionState(BeeState state)
+    {
+        if (state == beeState)
+        {
+            return;
+        }
+
+        previousBeeState = beeState;
+        beeState = state;
+        OnStateChange(state);
     }
 }

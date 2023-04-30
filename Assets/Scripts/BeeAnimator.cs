@@ -84,4 +84,14 @@ public class BeeAnimator : MonoBehaviour
             spriteRenderer.flipX = false;
         }
     }
+
+    void Show()
+    {
+        spriteRenderer.enabled = true;
+    }
+
+    void Hide()
+    {
+        spriteRenderer.enabled = false;
+    }
 }
