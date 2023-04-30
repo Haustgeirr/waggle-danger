@@ -57,6 +57,10 @@ public class GameManager : MonoBehaviour
     public GameObject winUI;
     public GameObject loseUI;
 
+    [Header("Audio")]
+    public AudioSource musicSource;
+    public bool isMusicPlaying = false;
+
     public static GameManager Instance
     {
         get
@@ -101,6 +105,8 @@ public class GameManager : MonoBehaviour
         waggleUI = GameObject.Find("WaggleUI");
         winUI = GameObject.Find("WinUI");
         loseUI = GameObject.Find("LoseUI");
+
+        musicSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -126,11 +132,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (gameState == GameState.Playing)
-        {
-            CheckGameCondition();
-            TickGame();
-        }
+        TickGame();
     }
 
     void SpaceAction()
@@ -292,6 +294,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (!isMusicPlaying)
+            {
+                musicSource.Play();
+                isMusicPlaying = true;
+            }
+
             menuUI.SetActive(true);
             SetPlayActive(false);
             HandleVictoryState();
@@ -331,9 +339,14 @@ public class GameManager : MonoBehaviour
 
         if (tickTimer >= tickRate)
         {
-            foreach (IEntity entity in entities)
+            if (gameState == GameState.Playing)
             {
-                entity.Tick();
+                foreach (IEntity entity in entities)
+                {
+                    entity.Tick();
+                }
+
+                CheckGameCondition();
             }
 
             tickTimer = 0.0f;

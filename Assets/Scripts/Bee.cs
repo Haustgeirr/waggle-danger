@@ -32,6 +32,8 @@ public class Bee : MonoBehaviour, IEntity
     public float interactionRange = 0.5f;
     private int gatherAmount = 1;
 
+    private bool enteredHiveThisTick = false;
+
     private CameraShake cameraShake;
 
     [Header("Audio")]
@@ -95,6 +97,11 @@ public class Bee : MonoBehaviour, IEntity
                 Gather();
                 break;
             case BeeState.Storing:
+                if (enteredHiveThisTick)
+                {
+                    enteredHiveThisTick = false;
+                    break;
+                }
                 Store();
                 break;
         }
@@ -222,6 +229,11 @@ public class Bee : MonoBehaviour, IEntity
     {
         SetSpriteVisible(!inHive);
         PlaySound(enterHive);
+
+        if (inHive)
+        {
+            enteredHiveThisTick = true;
+        }
     }
 
     void OnEnterState(BeeState state)
