@@ -18,6 +18,20 @@ public class BeeAnimator : MonoBehaviour
     private int spriteIndex = 0;
     private GameManager gameManager;
 
+    [Header("Particle Settings")]
+    public ParticleSystem getNectarEffect;
+    public ParticleSystem loseNectarEffect;
+
+    public void GetNectar()
+    {
+        getNectarEffect.Play();
+    }
+
+    public void LoseNectar()
+    {
+        loseNectarEffect.Play();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +40,9 @@ public class BeeAnimator : MonoBehaviour
 
         spriteChangeDelay = gameManager.tickRate / 16f;
         startPosition = transform.localPosition;
+
+        getNectarEffect = transform.Find("GetNectarEffect").GetComponent<ParticleSystem>();
+        loseNectarEffect = transform.Find("LoseNectarEffect").GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame

@@ -28,8 +28,11 @@ public class Bee : MonoBehaviour, IEntity
     private IGatherable targetFlowerGatherable;
     private IStorable hiveStorable;
     private GameManager gameManager;
+    private BeeAnimator beeAnimator;
     public float interactionRange = 0.5f;
     private int gatherAmount = 1;
+
+    private CameraShake cameraShake;
 
     [Header("Audio")]
     public AudioClip buzz;
@@ -59,6 +62,7 @@ public class Bee : MonoBehaviour, IEntity
     {
         if (nectarAmount > 0)
         {
+            beeAnimator.LoseNectar();
             KnockOutNectar();
         }
         else
@@ -103,6 +107,8 @@ public class Bee : MonoBehaviour, IEntity
 
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
+
+        beeAnimator = GetComponentInChildren<BeeAnimator>();
     }
 
     // Update is called once per frame
@@ -141,6 +147,7 @@ public class Bee : MonoBehaviour, IEntity
 
     void Gather()
     {
+        beeAnimator.GetNectar();
         var toGather = Mathf.Min(gatherAmount, nectarCapacity - nectarAmount);
         var amountGathered = targetFlowerGatherable.Gather(toGather);
 

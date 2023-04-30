@@ -43,6 +43,8 @@ public class Crow : MonoBehaviour, IEntity
     private Waggler waggler;
     private GameManager gameManager;
     private GameObject sprite;
+    private GameObject cameraObject;
+    private CameraShake cameraShake;
 
     private AudioSource audioSource;
 
@@ -90,6 +92,9 @@ public class Crow : MonoBehaviour, IEntity
         sprite = GetComponentInChildren<SpriteRenderer>().gameObject;
         telegraph = telegraphGameObject.GetComponentInChildren<TelegraphAnimator>();
         audioSource = GameObject.Find("CrowAudioSource").GetComponent<AudioSource>();
+
+        cameraObject = GameObject.Find("Main Camera");
+        cameraShake = cameraObject.GetComponentInChildren<CameraShake>();
     }
 
     // Update is called once per frame
@@ -207,8 +212,11 @@ public class Crow : MonoBehaviour, IEntity
 
         if (IsHitByAttack(playerPosition))
         {
+            cameraShake.Shake(gameManager.tickRate / 2f, 0.8f, 0.5f);
             playerBee.GetHit();
+            return;
         }
+        cameraShake.Shake(gameManager.tickRate / 2f, 0.4f, 2f);
     }
 
     void AttackFlowers()

@@ -14,6 +14,8 @@ public class Flower : MonoBehaviour, IGatherable
     public Sprite[] wiltedSprites;
     public SpriteRenderer spriteRenderer;
 
+    public ParticleSystem wiltEffect;
+
     private int flowerVariant = 0;
 
     public int Gather(int gatherAmount)
@@ -48,6 +50,7 @@ public class Flower : MonoBehaviour, IGatherable
         // set flower variant
         flowerVariant = Random.Range(0, flowerSprites.Length);
         spriteRenderer.sprite = flowerSprites[flowerVariant];
+        wiltEffect = GetComponentInChildren<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -57,6 +60,7 @@ public class Flower : MonoBehaviour, IGatherable
     void Wilt()
     {
         Debug.Log("Flower is wilting");
+        wiltEffect.Play();
         gameManager.flowers.Remove(this.gameObject);
         spriteRenderer.sprite = wiltedSprites[flowerVariant];
     }

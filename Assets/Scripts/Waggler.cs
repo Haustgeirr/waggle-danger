@@ -91,7 +91,7 @@ public class Waggler : MonoBehaviour, IEntity
         {
             // var hasMultiple = IsInputBlocked();
 
-            if (!hasReceivedInput)
+            if (!IsInputBlocked())
             {
                 direction = ctx.ReadValue<Vector2>();
                 player.transform.position += new Vector3(direction.x, direction.y, 0);
@@ -144,14 +144,14 @@ public class Waggler : MonoBehaviour, IEntity
 
     bool IsInputBlocked()
     {
-        if (inputBlocked)
-        {
-            return true;
-        }
+        // if (inputBlocked)
+        // {
+        //     return true;
+        // }
 
-        if (hasReceivedInput && inputTimer <= tickDuration - earlyAllowance)
+        if (hasReceivedInput)
         {
-            Debug.Log("TOo many Inputs!");
+            Debug.Log("Too many Inputs!");
             isMiss = true;
             return true;
         }

@@ -56,3 +56,6 @@ TagManager:
   - name: Waggler
     uniqueID: 1429923919
     locked: 0
+  - name: FX
+    uniqueID: 1186310815
+    locked: 0
