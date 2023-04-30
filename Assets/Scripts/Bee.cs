@@ -66,6 +66,7 @@ public class Bee : MonoBehaviour, IEntity
         nectarAmount = 0;
         hasNectar = false;
         isFull = false;
+        SetSpriteVisible(false);
 
         transform.position = hiveGameObject.transform.position;
     }
