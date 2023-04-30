@@ -46,7 +46,7 @@ public class Crow : MonoBehaviour, IEntity
         if (isAttacking)
         {
             attackTimer += Time.deltaTime;
-            var t = Mathf.Clamp(attackTimer / gameManager.tickRate, 0.0f, 1.0f);
+            var t = Mathf.Clamp01(attackTimer / gameManager.tickRate);
             transform.position = Vector3.Lerp(startPosition, endPosition, t);
         }
     }
