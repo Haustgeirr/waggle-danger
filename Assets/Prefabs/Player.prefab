@@ -241,10 +241,17 @@ MonoBehaviour:
   targetFlowerGameObject: {fileID: 0}
   hiveDistance: Infinity
   beeState: 2
-  nectarCapacity: 3
+  previousBeeState: 0
+  spriteRenderers: []
+  audioSource: {fileID: 0}
+  nectarCapacity: 6
   nectarAmount: 0
   hasNectar: 0
   isFull: 0
+  interactionRange: 0.5
+  buzz: {fileID: 0}
+  gather: {fileID: 0}
+  enterHive: {fileID: 8300000, guid: daac6f6318db1df4d93065aa80a1059d, type: 3}
 --- !u!82 &3524442748657427947
 AudioSource:
   m_ObjectHideFlags: 0
