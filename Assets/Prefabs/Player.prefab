@@ -252,6 +252,10 @@ MonoBehaviour:
   nectarAmount: 0
   hasNectar: 0
   isFull: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  startPosition: {x: 0, y: 0, z: 0}
+  isMoving: 0
+  moveTimer: 0
   interactionRange: 0.5
   buzz: {fileID: 0}
   gather: {fileID: 8300000, guid: 7d123549c04bc804d8e085025cf981fe, type: 3}
@@ -259,6 +263,7 @@ MonoBehaviour:
   loseNectar: {fileID: 8300000, guid: f91dcd92a30a98b438127df07db056ee, type: 3}
   missInput: {fileID: 8300000, guid: 8d6d522e04844994183a0c1f04fa3906, type: 3}
   nectarCollect: {fileID: 8300000, guid: f27fec33441ba3145bba7f44fb0432e3, type: 3}
+  move: {fileID: 8300000, guid: c256d57a1715e9949b7d3cedd7970513, type: 3}
 --- !u!82 &3524442748657427947
 AudioSource:
   m_ObjectHideFlags: 0

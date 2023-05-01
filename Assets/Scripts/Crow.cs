@@ -34,6 +34,7 @@ public class Crow : MonoBehaviour, IEntity
     public int initialAttackCooldown = 24;
     public int attackCooldown = 3;
     public int attackCooldownTimer = 0;
+    public ParticleSystem attackParticleSystem;
 
     private float attackTimer;
     private bool hasAttacked = false;
@@ -67,6 +68,7 @@ public class Crow : MonoBehaviour, IEntity
     public void SetDifficulty(int difficulty)
     {
         var prevAttackCooldown = attackCooldown;
+        var newDifficulty = Mathf.Clamp(difficulty, 0, difficulties.Length - 1);
         attackWidth = difficulties[difficulty].attackWidth;
         attackDelay = difficulties[difficulty].attackDelay;
         attackCooldown = Random.Range(
@@ -109,6 +111,7 @@ public class Crow : MonoBehaviour, IEntity
             isAttacking = false;
             telegraph.Hide();
             audioSource.Stop();
+            attackParticleSystem.Stop();
             return;
         }
         // lerp position between start and end
@@ -155,6 +158,7 @@ public class Crow : MonoBehaviour, IEntity
             hasAttacked = false;
             attackTimer = 0.0f;
             attackCooldownTimer = attackCooldown;
+            attackParticleSystem.Stop();
             return;
         }
 
@@ -168,6 +172,7 @@ public class Crow : MonoBehaviour, IEntity
                 isAttacking = true;
                 attackTimer = 0.0f;
                 audioSource.Play();
+                attackParticleSystem.Play();
             }
 
             return;

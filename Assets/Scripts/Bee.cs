@@ -25,6 +25,11 @@ public class Bee : MonoBehaviour, IEntity
     public bool hasNectar = false;
     public bool isFull = false;
 
+    public Vector3 targetPosition;
+    public Vector3 startPosition;
+    public bool isMoving = false;
+    public float moveTimer = 0.0f;
+
     private IGatherable targetFlowerGatherable;
     private IStorable hiveStorable;
     private GameManager gameManager;
@@ -43,6 +48,7 @@ public class Bee : MonoBehaviour, IEntity
     public AudioClip loseNectar;
     public AudioClip missInput;
     public AudioClip nectarCollect;
+    public AudioClip move;
 
     public void PlaySound(AudioClip clip, float pitch = 1f)
     {
@@ -129,14 +135,42 @@ public class Bee : MonoBehaviour, IEntity
         beeAnimator = GetComponentInChildren<BeeAnimator>();
     }
 
+    public void StartMoving(Vector3 direction)
+    {
+        PlaySound(move);
+        startPosition = transform.position;
+        this.targetPosition = startPosition + direction;
+        isMoving = true;
+        moveTimer = 0.0f;
+    }
+
     // Update is called once per frame
-    void Update() { }
+    void Update()
+    {
+        if (isMoving)
+        {
+            moveTimer += Time.deltaTime;
+            var moveDuration = gameManager.tickRate * 0.25f;
+            transform.position = Vector3.Lerp(
+                startPosition,
+                targetPosition,
+                moveTimer / moveDuration
+            );
+
+            if (Vector3.Distance(transform.position, targetPosition) < Mathf.Epsilon)
+            {
+                isMoving = false;
+            }
+        }
+    }
 
     void Store()
     {
         PlaySound(nectarCollect);
         beeAnimator.GetNectar();
-        var storeAmount = gatherAmount * 2;
+
+        var storeAmount = Mathf.Min(nectarAmount, gatherAmount * 2);
+
         hiveStorable.Store(storeAmount);
         nectarAmount -= storeAmount;
     }

@@ -5,7 +5,22 @@ using UnityEngine.InputSystem;
 
 public class Waggler : MonoBehaviour, IEntity
 {
-    public static int[] comboMultipliers = new int[] { 1, 2, 4, 8, 8, 16, 16, 32, 32, 32, 32, 64 };
+    public static int[] comboMultipliers = new int[]
+    {
+        1,
+        2,
+        4,
+        8,
+        8,
+        16,
+        16,
+        16,
+        32,
+        32,
+        32,
+        32,
+        64
+    };
 
     private GameManager gameManager;
 
@@ -105,7 +120,8 @@ public class Waggler : MonoBehaviour, IEntity
             if (!IsInputBlocked())
             {
                 direction = ctx.ReadValue<Vector2>();
-                player.transform.position += new Vector3(direction.x, direction.y, 0);
+                // player.transform.position += new Vector3(direction.x, direction.y, 0);
+                player.StartMoving(new Vector3(direction.x, direction.y, 0));
 
                 ScoreInput();
             }

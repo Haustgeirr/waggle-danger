@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
     public GameObject loseUI;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI scoreShadow;
+    public TextMeshProUGUI nectarText;
 
     [Header("Audio")]
     public AudioSource musicSource;
@@ -81,8 +82,9 @@ public class GameManager : MonoBehaviour
     public void CollectNectar(int nectarAmount)
     {
         nectarCollected += nectarAmount;
-
         score += nectarAmount * waggler.comboMultiplier;
+
+        SetNectarText();
 
         var newDifficulty = nectarCollected / difficultyNectarRequirement;
         if (newDifficulty > difficulty)
@@ -90,6 +92,12 @@ public class GameManager : MonoBehaviour
             difficulty = newDifficulty;
             crow.SetDifficulty(difficulty);
         }
+    }
+
+    void SetNectarText()
+    {
+        var nectarString = nectarCollected.ToString() + " / " + nectarGoal.ToString();
+        nectarText.text = nectarString;
     }
 
     // Start is called before the first frame update
@@ -229,7 +237,7 @@ public class GameManager : MonoBehaviour
     void StartGame()
     {
         nectarCollected = 0;
-        tickTimer = 0.0f;
+        // tickTimer = 0.0f;
         gameState = GameState.Menu;
         victoryState = VictoryState.None;
         difficulty = 0;
@@ -247,6 +255,8 @@ public class GameManager : MonoBehaviour
         playerBee.Init();
         waggler.Init();
         crow.Init();
+
+        SetNectarText();
 
         gameState = GameState.Playing;
     }
@@ -365,6 +375,7 @@ public class GameManager : MonoBehaviour
     void WinGame()
     {
         Debug.Log("You win!");
+        playerBee.nectarAmount = 0;
         gameState = GameState.GameOver;
         victoryState = VictoryState.Win;
     }
